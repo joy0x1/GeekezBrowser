@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build Output
+dist/
+release/
+
+# User Data (绝对不能上传你的配置)
+userData/
+BrowserProfiles/
+_Trash_Bin/
+
+# Environment
+.env
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Downloaded Binaries (通过脚本下载，不要传到 Git)
+resources/bin/

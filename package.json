@@ -1,0 +1,66 @@
+{
+  "name": "geekez-browser",
+  "version": "1.3.0",
+  "description": "Stealthy Anti-Detect Browser for E-Commerce",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "node setup.js",
+    "build:win": "electron-builder --win --x64",
+    "build:mac": "electron-builder --mac --arm64 --x64",
+    "build:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.geekez.browser",
+    "productName": "GeekEZ Browser",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!**/*.ts",
+      "!*.map",
+      "!package-lock.json",
+      "!dist",
+      "!_Trash_Bin"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/bin",
+        "to": "bin",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icon.icns"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "dependencies": {
+    "electron": "^39.2.3",
+    "fs-extra": "^11.3.2",
+    "get-port": "^5.1.1",
+    "js-base64": "^3.7.8",
+    "js-yaml": "^4.1.1",
+    "puppeteer": "^24.31.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "socks-proxy-agent": "^8.0.5",
+    "tcp-ping": "^0.1.1",
+    "tree-kill": "^1.2.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  }
+}
