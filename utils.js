@@ -25,13 +25,12 @@ function getProxyRemark(link) {
 }
 
 function parseProxyLink(link, tag) {
-    let outbound = { 
+    let outbound = {
         tag: tag,
-        // 开启嗅探，这对双栈至关重要
         sniffing: {
             enabled: true,
             destOverride: ["http", "tls", "quic"],
-            routeOnly: true 
+            routeOnly: true
         }
     };
     link = link.trim();
@@ -49,7 +48,7 @@ function parseProxyLink(link, tag) {
                     users: [{ id: vmess.id, alterId: parseInt(vmess.aid || 0), security: vmess.scy || "auto" }]
                 }]
             };
-            
+
             const net = vmess.net || "tcp";
             outbound.streamSettings = {
                 network: net,
@@ -57,18 +56,19 @@ function parseProxyLink(link, tag) {
                 wsSettings: net === "ws" ? { path: vmess.path, headers: { Host: vmess.host } } : undefined,
                 grpcSettings: net === "grpc" ? { serviceName: vmess.path || vmess.serviceName } : undefined,
                 httpSettings: net === "h2" ? { path: vmess.path, host: vmess.host ? vmess.host.split(',') : [] } : undefined,
-                kcpSettings: net === "kcp" ? { header: { type: vmess.type || "none" }, seed: vmess.path } : undefined
+                kcpSettings: net === "kcp" ? { header: { type: vmess.type || "none" }, seed: vmess.path } : undefined,
+                quicSettings: net === "quic" ? { security: vmess.host, key: vmess.path, header: { type: vmess.type } } : undefined
             };
 
             if (vmess.tls === 'tls') {
                 outbound.streamSettings.tlsSettings = {
                     serverName: vmess.sni || vmess.host,
-                    fingerprint: "chrome", // 伪装 Chrome TLS 指纹
+                    fingerprint: "chrome",
                     allowInsecure: true,
                     alpn: vmess.alpn ? vmess.alpn.split(',') : undefined
                 };
             }
-        } 
+        }
         else if (link.startsWith('vless://')) {
             const urlObj = new URL(link);
             const params = urlObj.searchParams;
@@ -83,7 +83,7 @@ function parseProxyLink(link, tag) {
                     users: [{
                         id: urlObj.username,
                         encryption: params.get("encryption") || "none",
-                        flow: params.get("flow") || "" 
+                        flow: params.get("flow") || ""
                     }]
                 }]
             };
@@ -97,12 +97,16 @@ function parseProxyLink(link, tag) {
             } else if (type === 'xhttp' || type === 'splithttp') {
                 outbound.streamSettings.network = "xhttp";
                 outbound.streamSettings.xhttpSettings = { path: params.get("path") || "/", host: params.get("host") || "" };
+            } else if (type === 'kcp') {
+                outbound.streamSettings.kcpSettings = { header: { type: params.get("headerType") || "none" }, seed: params.get("seed") };
+            } else if (type === 'h2') {
+                outbound.streamSettings.httpSettings = { path: params.get("path") || "/", host: params.get("host") ? params.get("host").split(',') : [] };
             }
 
             if (security === 'tls') {
                 outbound.streamSettings.tlsSettings = {
                     serverName: params.get("sni") || params.get("host") || urlObj.hostname,
-                    fingerprint: "chrome",
+                    fingerprint: params.get("fp") || "chrome",
                     allowInsecure: true,
                     alpn: params.get("alpn") ? params.get("alpn").split(',') : undefined
                 };
@@ -110,7 +114,7 @@ function parseProxyLink(link, tag) {
                 outbound.streamSettings.realitySettings = {
                     show: false,
                     fingerprint: params.get("fp") || "chrome",
-                    serverName: params.get("sni") || "",
+                    serverName: params.get("sni") || params.get("host") || "",
                     publicKey: params.get("pbk") || "",
                     shortId: params.get("sid") || "",
                     spiderX: params.get("spx") || ""
@@ -121,7 +125,7 @@ function parseProxyLink(link, tag) {
             const urlObj = new URL(link);
             const params = urlObj.searchParams;
             const type = params.get("type") || "tcp";
-            
+
             outbound.protocol = "trojan";
             outbound.settings = { servers: [{ address: urlObj.hostname, port: parseInt(urlObj.port), password: urlObj.username }] };
             outbound.streamSettings = {
@@ -134,31 +138,80 @@ function parseProxyLink(link, tag) {
         }
         else if (link.startsWith('ss://')) {
             let raw = link.replace('ss://', '');
-            if (raw.includes('#')) raw = raw.split('#')[0]; 
+            if (raw.includes('#')) raw = raw.split('#')[0];
             let method, password, host, port;
+
+            // Handle new ss format (user:pass@host:port) and legacy format (base64)
             if (raw.includes('@')) {
                 const parts = raw.split('@');
                 const userPart = parts[0];
                 const hostPart = parts[1];
-                if (!userPart.includes(':')) { const decoded = decodeBase64Content(userPart); [method, password] = decoded.split(':'); } 
-                else { [method, password] = userPart.split(':'); }
-                [host, port] = hostPart.split(':');
+
+                // Check if userPart is base64 encoded (legacy with @) or plain text
+                // Shadowsocks-2022 often uses long keys which might look like base64 but are just strings
+                // A simple heuristic: if it contains ':', it's likely method:password. 
+                // If it doesn't, it might be base64 encoded method:password
+                if (!userPart.includes(':')) {
+                    try {
+                        const decoded = decodeBase64Content(userPart);
+                        if (decoded.includes(':')) {
+                            [method, password] = decoded.split(':');
+                        } else {
+                            // Fallback or error
+                            throw new Error("Invalid SS User Part");
+                        }
+                    } catch (e) {
+                        // Maybe it's not base64, but just a password? Unlikely for standard SS links
+                        throw e;
+                    }
+                } else {
+                    [method, password] = userPart.split(':');
+                }
+
+                // Host part might be ipv6 [::1]:port or ipv4:port
+                const lastColonIndex = hostPart.lastIndexOf(':');
+                host = hostPart.substring(0, lastColonIndex);
+                port = hostPart.substring(lastColonIndex + 1);
+
+                // Remove brackets from IPv6
+                if (host.startsWith('[') && host.endsWith(']')) {
+                    host = host.slice(1, -1);
+                }
             } else {
+                // Legacy base64 encoded link
                 const decoded = decodeBase64Content(raw);
                 const match = decoded.match(/^(.*?):(.*?)@(.*?):(\d+)$/);
-                if(match) { [, method, password, host, port] = match; } 
-                else { const parts = decoded.split(':'); if(parts.length >= 3) { method=parts[0]; password=parts[1]; host=parts[2]; port=parts[3]; } }
+                if (match) {
+                    [, method, password, host, port] = match;
+                } else {
+                    const parts = decoded.split(':');
+                    if (parts.length >= 3) {
+                        method = parts[0];
+                        password = parts[1];
+                        host = parts[2];
+                        port = parts[3];
+                    }
+                }
             }
+
             outbound.protocol = "shadowsocks";
-            outbound.settings = { servers: [{ address: host, port: parseInt(port), method, password }] };
+            outbound.settings = {
+                servers: [{
+                    address: host,
+                    port: parseInt(port),
+                    method: method,
+                    password: password,
+                    ivCheck: true
+                }]
+            };
         } else if (link.startsWith('socks')) {
-             const urlObj = new URL(link.replace(/^socks5?:\/\//, 'http://'));
-             outbound.protocol = "socks";
-             outbound.settings = { servers: [{ address: urlObj.hostname, port: parseInt(urlObj.port), users: urlObj.username ? [{ user: urlObj.username, pass: urlObj.password }] : [] }] };
+            const urlObj = new URL(link.replace(/^socks5?:\/\//, 'http://'));
+            outbound.protocol = "socks";
+            outbound.settings = { servers: [{ address: urlObj.hostname, port: parseInt(urlObj.port), users: urlObj.username ? [{ user: urlObj.username, pass: urlObj.password }] : [] }] };
         } else if (link.startsWith('http')) {
-             const urlObj = new URL(link);
-             outbound.protocol = "http";
-             outbound.settings = { servers: [{ address: urlObj.hostname, port: parseInt(urlObj.port), users: urlObj.username ? [{ user: urlObj.username, pass: urlObj.password }] : [] }] };
+            const urlObj = new URL(link);
+            outbound.protocol = "http";
+            outbound.settings = { servers: [{ address: urlObj.hostname, port: parseInt(urlObj.port), users: urlObj.username ? [{ user: urlObj.username, pass: urlObj.password }] : [] }] };
         } else { throw new Error("Unsupported protocol"); }
     } catch (e) { console.error("Parse Proxy Error:", link, e); throw e; }
     return outbound;
@@ -167,7 +220,7 @@ function parseProxyLink(link, tag) {
 function generateXrayConfig(mainProxyStr, localPort, preProxyConfig = null) {
     const outbounds = [];
     let mainOutbound;
-    try { mainOutbound = parseProxyLink(mainProxyStr, "proxy_main"); } 
+    try { mainOutbound = parseProxyLink(mainProxyStr, "proxy_main"); }
     catch (e) { mainOutbound = { protocol: "freedom", tag: "proxy_main" }; }
 
     if (preProxyConfig && preProxyConfig.preProxies && preProxyConfig.preProxies.length > 0) {
@@ -176,7 +229,7 @@ function generateXrayConfig(mainProxyStr, localPort, preProxyConfig = null) {
             const preOutbound = parseProxyLink(target.url, "proxy_pre");
             outbounds.push(preOutbound);
             mainOutbound.proxySettings = { tag: "proxy_pre" };
-        } catch (e) {}
+        } catch (e) { }
     }
 
     outbounds.push(mainOutbound);
@@ -187,11 +240,11 @@ function generateXrayConfig(mainProxyStr, localPort, preProxyConfig = null) {
         inbounds: [{ port: localPort, listen: "127.0.0.1", protocol: "socks", settings: { udp: true } }],
         outbounds: outbounds,
         // 核心修复：路由策略支持双栈
-        routing: { 
+        routing: {
             // IPIfNonMatch: 如果域名规则没匹配到，尝试解析IP，如果解析出v4用v4，有v6用v6
             // 这允许双栈流量正常通行，解决了 ip.sb 只显示 v6 的问题
-            domainStrategy: "IPIfNonMatch", 
-            rules: [{ type: "field", outboundTag: "proxy_main", port: "0-65535" }] 
+            domainStrategy: "IPIfNonMatch",
+            rules: [{ type: "field", outboundTag: "proxy_main", port: "0-65535" }]
         }
     };
 }

@@ -1,4 +1,4 @@
-const i18n = {
+﻿const i18n = {
     en: {
         enablePreProxy: "Enable Chain Proxy",
         manageChain: "Proxy Chain",
@@ -80,8 +80,21 @@ const i18n = {
         msgImported: "Imported",
         msgNodes: "nodes.",
         msgUpdateFailed: "Update Failed:",
-		tagsLabel: "Tags (comma separated)",
-		timezoneLabel: "Timezone"
+        tagsLabel: "Tags (comma separated)",
+        timezoneLabel: "Timezone",
+        settingsTitle: "⚙️ Settings",
+        settingsTabExtensions: "🧩 Extensions",
+        settingsTabAdvanced: "⚡ Advanced",
+        settingsExtTitle: "Extension Management",
+        settingsExtDesc: "Load custom Chrome extensions. Extensions will be loaded automatically when launching profiles.",
+        settingsExtAddBtn: "+ Add Extension Folder",
+        settingsAdvTitle: "Advanced Settings",
+        settingsAdvDesc: "Advanced features coming soon...",
+        btnClose: "Close",
+        settingsExtNoExt: "No extensions loaded",
+        settingsExtRemove: "Remove",
+        settingsExtAdded: "Extension added successfully!",
+        settingsExtRemoved: "Extension removed!"
     },
     cn: {
         enablePreProxy: "开启前置代理",
@@ -164,8 +177,21 @@ const i18n = {
         msgImported: "成功导入",
         msgNodes: "个节点。",
         msgUpdateFailed: "更新失败：",
-		tagsLabel: "标签 (逗号分隔)",
-		timezoneLabel: "时区"
+        tagsLabel: "标签 (逗号分隔)",
+        timezoneLabel: "时区",
+        settingsTitle: "⚙️ 设置",
+        settingsTabExtensions: "🧩 扩展管理",
+        settingsTabAdvanced: "⚡ 高级设置",
+        settingsExtTitle: "扩展管理",
+        settingsExtDesc: "加载自定义 Chrome 扩展。扩展将在启动环境时自动加载。",
+        settingsExtAddBtn: "+ 添加扩展文件夹",
+        settingsAdvTitle: "高级设置",
+        settingsAdvDesc: "高级功能即将推出...",
+        btnClose: "关闭",
+        settingsExtNoExt: "暂无扩展",
+        settingsExtRemove: "移除",
+        settingsExtAdded: "扩展添加成功！",
+        settingsExtRemoved: "扩展已移除！"
     }
 };
 
@@ -192,18 +218,18 @@ function getProxyRemark(link) {
         if (link.startsWith('vmess://')) {
             const base64Str = link.replace('vmess://', '');
             const configStr = decodeBase64Content(base64Str);
-            try { return JSON.parse(configStr).ps || ''; } catch(e) { return ''; }
+            try { return JSON.parse(configStr).ps || ''; } catch (e) { return ''; }
         } else if (link.includes('#')) {
             return decodeURIComponent(link.split('#')[1]).trim();
         }
-    } catch (e) {}
+    } catch (e) { }
     return '';
 }
 
 function t(key) { return i18n[curLang][key] || key; }
 
 function renderHelpContent() {
-    const manualHTML = curLang === 'en' ? 
+    const manualHTML = curLang === 'en' ?
         `<div style="margin-bottom:25px;"><h4 style="color:var(--accent);margin-bottom:8px;">1. Create Environment</h4><p style="font-size:14px;">Enter a name and proxy link. The system creates a unique fingerprint.</p></div>
          <div style="margin-bottom:25px;"><h4 style="color:var(--accent);margin-bottom:8px;">2. Launch</h4><p style="font-size:14px;">Click Launch. A green badge indicates active status.</p></div>
          <div style="margin-bottom:25px;"><h4 style="color:var(--accent);margin-bottom:8px;">3. Pre-Proxy</h4><p style="font-size:14px;">Optional chain proxy for IP hiding. Use TCP protocols for stability.</p></div>` :
@@ -212,7 +238,7 @@ function renderHelpContent() {
          <div style="margin-bottom:25px;"><h4 style="color:var(--accent);margin-bottom:8px;">3. 前置代理</h4><p style="font-size:14px;">可选功能。用于隐藏本机IP或链路加速。</p></div>`;
 
     const aboutHTML = curLang === 'en' ?
-        `<div style="text-align:center;margin-bottom:20px;"><div style="font-size:24px;font-weight:bold;color:var(--text-primary);">Geek<span style="color:var(--accent);">EZ</span></div><div style="font-size:12px;opacity:0.6;">v1.2.0</div></div>
+        `<div style="text-align:center;margin-bottom:20px;"><div style="font-size:24px;font-weight:bold;color:var(--text-primary);">Geek<span style="color:var(--accent);">EZ</span></div><div style="font-size:12px;opacity:0.6;">v1.2.1</div></div>
          <h4 style="border-bottom:1px solid var(--border);padding-bottom:5px;color:var(--text-primary);">Technology</h4><p style="font-size:13px;margin-bottom:20px;">Electron + Puppeteer. Native Code Spoofing & Noise Injection.</p>
          <h4 style="border-bottom:1px solid var(--border);padding-bottom:5px;color:var(--text-primary);">Platform Analysis</h4>
          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
@@ -223,7 +249,7 @@ function renderHelpContent() {
             <div style="background:rgba(0,0,0,0.15);padding:10px;border-radius:6px;"><div style="color:#bf0000;font-weight:bold;">Rakuten</div><div style="font-size:11px;margin-top:5px;">Strict IP check.</div></div>
             <div style="background:rgba(0,0,0,0.15);padding:10px;border-radius:6px;"><div style="color:#f1c40f;font-weight:bold;">Mercado</div><div style="font-size:11px;margin-top:5px;">Safe. Similar to Amazon.</div></div>
          </div>` :
-        `<div style="text-align:center;margin-bottom:20px;"><div style="font-size:24px;font-weight:bold;color:var(--text-primary);">Geek<span style="color:var(--accent);">EZ</span></div><div style="font-size:12px;opacity:0.6;">v1.2.0</div></div>
+        `<div style="text-align:center;margin-bottom:20px;"><div style="font-size:24px;font-weight:bold;color:var(--text-primary);">Geek<span style="color:var(--accent);">EZ</span></div><div style="font-size:12px;opacity:0.6;">v1.2.1</div></div>
          <h4 style="border-bottom:1px solid var(--border);padding-bottom:5px;color:var(--text-primary);">技术内核</h4><p style="font-size:13px;margin-bottom:20px;">Native Code 伪装 + 多媒体噪音注入，有效对抗指纹。</p>
          <h4 style="border-bottom:1px solid var(--border);padding-bottom:5px;color:var(--text-primary);">平台适用性</h4>
          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
@@ -237,32 +263,32 @@ function renderHelpContent() {
 
     const manualEl = document.getElementById('help-manual');
     const aboutEl = document.getElementById('help-about');
-    if(manualEl) manualEl.innerHTML = manualHTML;
-    if(aboutEl) aboutEl.innerHTML = aboutHTML;
+    if (manualEl) manualEl.innerHTML = manualHTML;
+    if (aboutEl) aboutEl.innerHTML = aboutHTML;
 }
 
 function applyLang() {
     document.querySelectorAll('[data-i18n]').forEach(el => { el.innerText = t(el.getAttribute('data-i18n')); });
     document.querySelectorAll('.running-badge').forEach(el => { el.innerText = t('runningStatus'); });
     const themeSel = document.getElementById('themeSelect');
-    if(themeSel) { themeSel.options[0].text = t('themeGeek'); themeSel.options[1].text = t('themeLight'); themeSel.options[2].text = t('themeDark'); }
+    if (themeSel) { themeSel.options[0].text = t('themeGeek'); themeSel.options[1].text = t('themeLight'); themeSel.options[2].text = t('themeDark'); }
     renderHelpContent();
     updateToolbar(); loadProfiles(); renderGroupTabs();
 }
 
-function toggleLang() { 
-    curLang = curLang === 'cn' ? 'en' : 'cn'; 
+function toggleLang() {
+    curLang = curLang === 'cn' ? 'en' : 'cn';
     localStorage.setItem('geekez_lang', curLang);
-    applyLang(); 
+    applyLang();
 }
 
 function setTheme(themeName) {
     document.body.setAttribute('data-theme', themeName);
     localStorage.setItem('geekez_theme', themeName);
     const themeColors = {
-        'geek':  { bg: '#1e1e2d', symbol: '#ffffff' },
+        'geek': { bg: '#1e1e2d', symbol: '#ffffff' },
         'light': { bg: '#f0f2f5', symbol: '#000000' },
-        'dark':  { bg: '#121212', symbol: '#ffffff' }
+        'dark': { bg: '#121212', symbol: '#ffffff' }
     };
     const colors = themeColors[themeName] || themeColors['geek'];
     window.electronAPI.invoke('set-title-bar-color', colors);
@@ -286,7 +312,7 @@ function showInput(title, callback) {
 function closeInputModal() { document.getElementById('inputModal').style.display = 'none'; inputCallback = null; }
 function submitInputModal() {
     const val = document.getElementById('inputModalValue').value.trim();
-    if(val && inputCallback) inputCallback(val);
+    if (val && inputCallback) inputCallback(val);
     closeInputModal();
 }
 
@@ -294,11 +320,11 @@ async function init() {
     const savedTheme = localStorage.getItem('geekez_theme') || 'geek';
     setTheme(savedTheme);
     document.getElementById('themeSelect').value = savedTheme;
-    setTimeout(() => { const s = document.getElementById('splash'); if(s) { s.style.opacity='0'; setTimeout(()=>s.remove(),500); } }, 1500); 
+    setTimeout(() => { const s = document.getElementById('splash'); if (s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 500); } }, 1500);
 
     globalSettings = await window.electronAPI.getSettings();
-    if(!globalSettings.preProxies) globalSettings.preProxies = [];
-    if(!globalSettings.subscriptions) globalSettings.subscriptions = [];
+    if (!globalSettings.preProxies) globalSettings.preProxies = [];
+    if (!globalSettings.subscriptions) globalSettings.subscriptions = [];
 
     document.getElementById('enablePreProxy').checked = globalSettings.enablePreProxy || false;
     document.getElementById('enablePreProxy').addEventListener('change', updateToolbar);
@@ -306,29 +332,35 @@ async function init() {
         const badge = document.getElementById(`status-${id}`);
         if (badge) status === 'running' ? badge.classList.add('active') : badge.classList.remove('active');
     });
-    
+
     // 核心修复：版本号注入
     const info = await window.electronAPI.invoke('get-app-info');
     const verSpan = document.getElementById('app-version');
-    if(verSpan) verSpan.innerText = `v${info.version}`;
+    if (verSpan) verSpan.innerText = `v${info.version}`;
 
     checkSubscriptionUpdates();
     applyLang();
+
+    // Load timezones after DOM is ready - Custom Dropdown
+    if (typeof window.TIMEZONES !== 'undefined' && Array.isArray(window.TIMEZONES)) {
+        initCustomTimezoneDropdown('addTimezone', 'addTimezoneDropdown');
+        initCustomTimezoneDropdown('editTimezone', 'editTimezoneDropdown');
+    }
 }
 
 
 async function checkSubscriptionUpdates() {
     const now = Date.now();
     let updated = false;
-    for(const sub of globalSettings.subscriptions) {
-        if(!sub.interval || sub.interval == '0') continue;
+    for (const sub of globalSettings.subscriptions) {
+        if (!sub.interval || sub.interval == '0') continue;
         const intervalMs = parseInt(sub.interval) * 3600 * 1000;
-        if(now - (sub.lastUpdated || 0) > intervalMs) {
+        if (now - (sub.lastUpdated || 0) > intervalMs) {
             await updateSubscriptionNodes(sub);
             updated = true;
         }
     }
-    if(updated) await window.electronAPI.saveSettings(globalSettings);
+    if (updated) await window.electronAPI.saveSettings(globalSettings);
 }
 
 async function checkUpdates() {
@@ -343,16 +375,16 @@ async function checkUpdates() {
         if (xrayRes.update) {
             showAlert(`${t('xrayUpdateFound')} (v${xrayRes.remote})`);
             const success = await window.electronAPI.invoke('download-xray-update', xrayRes.downloadUrl);
-            if(success) showAlert(t('updateDownloaded'));
+            if (success) showAlert(t('updateDownloaded'));
             else showAlert(t('updateError'));
             return;
         }
         showAlert(t('noUpdate'));
-    } catch (e) { showAlert(t('updateError') + " " + e.message); } 
+    } catch (e) { showAlert(t('updateError') + " " + e.message); }
     finally { setTimeout(() => { btn.style.transform = 'none'; }, 1000); }
 }
 
-function openGithub() { window.electronAPI.invoke('open-url', 'https://github.com/EchoHS/GeekezBrowser'); } 
+function openGithub() { window.electronAPI.invoke('open-url', 'https://github.com/EchoHS/GeekezBrowser'); }
 
 function filterProfiles(text) {
     searchText = text.toLowerCase();
@@ -376,9 +408,9 @@ function stringToColor(str) {
 async function loadProfiles() {
     try {
         const profiles = await window.electronAPI.getProfiles();
-        const runningIds = await window.electronAPI.getRunningIds(); 
+        const runningIds = await window.electronAPI.getRunningIds();
         const listEl = document.getElementById('profileList');
-        
+
         if (viewMode === 'grid') {
             listEl.classList.add('grid-view');
             document.getElementById('viewIcon').innerHTML = '<path d="M3 10h18M3 14h18M3 18h18M3 6h18" stroke-width="2"/>';
@@ -391,9 +423,9 @@ async function loadProfiles() {
         const filtered = profiles.filter(p => {
             const text = searchText;
             // 搜索逻辑增强：支持搜标签
-            return p.name.toLowerCase().includes(text) || 
-                   p.proxyStr.toLowerCase().includes(text) ||
-                   (p.tags && p.tags.some(t => t.toLowerCase().includes(text)));
+            return p.name.toLowerCase().includes(text) ||
+                p.proxyStr.toLowerCase().includes(text) ||
+                (p.tags && p.tags.some(t => t.toLowerCase().includes(text)));
         });
 
         if (filtered.length === 0) {
@@ -405,14 +437,14 @@ async function loadProfiles() {
 
         filtered.forEach(p => {
             const fp = p.fingerprint || {};
-            const screen = fp.screen || { width:0, height:0 };
+            const screen = fp.screen || { width: 0, height: 0 };
             const override = p.preProxyOverride || 'default';
             const isRunning = runningIds.includes(p.id);
-            
+
             // 渲染标签 HTML
             let tagsHtml = '';
             if (p.tags && p.tags.length > 0) {
-                tagsHtml = p.tags.map(tag => 
+                tagsHtml = p.tags.map(tag =>
                     `<span class="tag" style="background:${stringToColor(tag)}33; color:${stringToColor(tag)}; border:1px solid ${stringToColor(tag)}44;">${tag}</span>`
                 ).join('');
             }
@@ -428,9 +460,9 @@ async function loadProfiles() {
                         <span class="tag">${screen.width}x${screen.height}</span>
                         <span class="tag" style="border:1px solid var(--accent);">
                             <select class="quick-switch-select no-drag" onchange="quickUpdatePreProxy('${p.id}', this.value)">
-                                <option value="default" ${override==='default'?'selected':''}>${t('qsDefault')}</option>
-                                <option value="on" ${override==='on'?'selected':''}>${t('qsOn')}</option>
-                                <option value="off" ${override==='off'?'selected':''}>${t('qsOff')}</option>
+                                <option value="default" ${override === 'default' ? 'selected' : ''}>${t('qsDefault')}</option>
+                                <option value="on" ${override === 'on' ? 'selected' : ''}>${t('qsOn')}</option>
+                                <option value="off" ${override === 'off' ? 'selected' : ''}>${t('qsOff')}</option>
                             </select>
                         </span>
                     </div>
@@ -446,7 +478,7 @@ async function loadProfiles() {
 async function quickUpdatePreProxy(id, val) {
     const profiles = await window.electronAPI.getProfiles();
     const p = profiles.find(x => x.id === id);
-    if(p) { p.preProxyOverride = val; await window.electronAPI.updateProfile(p); }
+    if (p) { p.preProxyOverride = val; await window.electronAPI.updateProfile(p); }
 }
 
 function openAddModal() {
@@ -466,8 +498,8 @@ async function saveNewProfile() {
     const tags = tagsStr.split(/[,，]/).map(s => s.trim()).filter(s => s);
 
     if (!name && proxyStr) { const autoName = getProxyRemark(proxyStr); if (autoName) name = autoName; }
-    if(!name || !proxyStr) return showAlert(t('inputReq'));
-    
+    if (!name || !proxyStr) return showAlert(t('inputReq'));
+
     // 传递 timezone
     await window.electronAPI.saveProfile({ name, proxyStr, tags, timezone });
     closeAddModal(); await loadProfiles();
@@ -476,8 +508,8 @@ async function saveNewProfile() {
 async function launch(id) {
     try {
         const msg = await window.electronAPI.launchProfile(id);
-        if(msg && msg.includes(':')) showAlert(msg);
-    } catch(e) { showAlert('Error: ' + e.message); }
+        if (msg && msg.includes(':')) showAlert(msg);
+    } catch (e) { showAlert('Error: ' + e.message); }
 }
 
 function remove(id) {
@@ -493,7 +525,7 @@ async function openEditModal(id) {
     document.getElementById('editName').value = p.name;
     document.getElementById('editProxy').value = p.proxyStr;
     document.getElementById('editTags').value = (p.tags || []).join(', ');
-    
+
     // 回填时区，如果没有则默认 LA
     document.getElementById('editTimezone').value = fp.timezone || 'America/Los_Angeles';
 
@@ -519,11 +551,11 @@ async function saveEditProfile() {
         const tagsStr = document.getElementById('editTags').value;
         p.tags = tagsStr.split(/[,，]/).map(s => s.trim()).filter(s => s);
         p.preProxyOverride = document.getElementById('editPreProxyOverride').value;
-        
+
         if (!p.fingerprint) p.fingerprint = {};
         // 保存时区
         p.fingerprint.timezone = document.getElementById('editTimezone').value;
-        
+
         p.fingerprint.screen = { width: parseInt(document.getElementById('editResW').value), height: parseInt(document.getElementById('editResH').value) };
         p.fingerprint.window = p.fingerprint.screen;
         p.fingerprint.userAgent = document.getElementById('editUA').value;
@@ -536,7 +568,7 @@ async function saveEditProfile() {
 
 async function openProxyManager() {
     globalSettings = await window.electronAPI.getSettings();
-    if(!globalSettings.subscriptions) globalSettings.subscriptions = [];
+    if (!globalSettings.subscriptions) globalSettings.subscriptions = [];
     renderGroupTabs();
     document.getElementById('proxyModal').style.display = 'flex';
 }
@@ -544,7 +576,7 @@ function closeProxyManager() { document.getElementById('proxyModal').style.displ
 
 function renderGroupTabs() {
     const container = document.getElementById('proxyGroupTabs');
-    if(!container) return;
+    if (!container) return;
     container.innerHTML = '';
     const manualBtn = document.createElement('div');
     manualBtn.className = `tab-btn no-drag ${currentProxyGroup === 'manual' ? 'active' : ''}`;
@@ -565,12 +597,12 @@ function switchProxyGroup(gid) { currentProxyGroup = gid; renderGroupTabs(); }
 
 function renderProxyNodes() {
     const modeSel = document.getElementById('proxyMode');
-    if(modeSel.options.length === 0) modeSel.innerHTML = `<option value="single">${t('modeSingle')}</option><option value="balance">${t('modeBalance')}</option><option value="failover">${t('modeFailover')}</option>`;
+    if (modeSel.options.length === 0) modeSel.innerHTML = `<option value="single">${t('modeSingle')}</option><option value="balance">${t('modeBalance')}</option><option value="failover">${t('modeFailover')}</option>`;
     modeSel.value = globalSettings.mode || 'single';
     document.getElementById('notifySwitch').checked = globalSettings.notify || false;
 
     const list = (globalSettings.preProxies || []).filter(p => {
-        if(currentProxyGroup === 'manual') return !p.groupId || p.groupId === 'manual';
+        if (currentProxyGroup === 'manual') return !p.groupId || p.groupId === 'manual';
         return p.groupId === currentProxyGroup;
     });
 
@@ -579,13 +611,13 @@ function renderProxyNodes() {
 
     const groupName = currentProxyGroup === 'manual' ? t('groupManual') : (globalSettings.subscriptions.find(s => s.id === currentProxyGroup)?.name || 'Sub');
     document.getElementById('currentGroupTitle').innerText = `${groupName} (${list.length})`;
-    
+
     const btnTest = document.querySelector('button[onclick="testCurrentGroup()"]');
-    if(btnTest) btnTest.innerText = t('btnTestGroup');
+    if (btnTest) btnTest.innerText = t('btnTestGroup');
     const btnNewSub = document.querySelector('button[onclick="openSubEditModal(true)"]');
-    if(btnNewSub) btnNewSub.innerText = t('btnImportSub');
+    if (btnNewSub) btnNewSub.innerText = t('btnImportSub');
     const btnEditSub = document.getElementById('btnEditSub');
-    if(btnEditSub) btnEditSub.innerText = t('btnEditSub');
+    if (btnEditSub) btnEditSub.innerText = t('btnEditSub');
 
     const isManual = currentProxyGroup === 'manual';
     document.getElementById('manualAddArea').style.display = isManual ? 'block' : 'none';
@@ -595,16 +627,16 @@ function renderProxyNodes() {
         const div = document.createElement('div');
         div.className = 'proxy-row no-drag';
         const isSel = globalSettings.mode === 'single' && globalSettings.selectedId === p.id;
-        if(isSel) div.style.background = "rgba(0,224,255,0.08)";
+        if (isSel) div.style.background = "rgba(0,224,255,0.08)";
 
         const inputType = globalSettings.mode === 'single' ? 'radio' : 'checkbox';
         const checked = globalSettings.mode === 'single' ? isSel : (p.enable !== false);
         const onchange = globalSettings.mode === 'single' ? `selP('${p.id}')` : `togP('${p.id}')`;
-        const inputHtml = `<input type="${inputType}" name="ps" ${checked?'checked':''} onchange="${onchange}" style="cursor:pointer; margin:0;" class="no-drag">`;
-        
+        const inputHtml = `<input type="${inputType}" name="ps" ${checked ? 'checked' : ''} onchange="${onchange}" style="cursor:pointer; margin:0;" class="no-drag">`;
+
         let latHtml = '';
-        if(p.latency !== undefined) {
-            if(p.latency === -1 || p.latency === 9999) latHtml = `<span class="proxy-latency" style="border:1px solid #e74c3c; color:#e74c3c;">Fail</span>`;
+        if (p.latency !== undefined) {
+            if (p.latency === -1 || p.latency === 9999) latHtml = `<span class="proxy-latency" style="border:1px solid #e74c3c; color:#e74c3c;">Fail</span>`;
             else {
                 const color = p.latency < 500 ? '#27ae60' : (p.latency < 1000 ? '#f39c12' : '#e74c3c');
                 latHtml = `<span class="proxy-latency" style="border:1px solid ${color}; color:${color};">${p.latency}ms</span>`;
@@ -630,9 +662,9 @@ function renderProxyNodes() {
         `;
         listEl.appendChild(div);
     });
-    
+
     const btnDone = document.querySelector('#proxyModal button[data-i18n="done"]');
-    if(btnDone) btnDone.innerText = t('done');
+    if (btnDone) btnDone.innerText = t('done');
 }
 
 function resetProxyInput() {
@@ -640,7 +672,7 @@ function resetProxyInput() {
     document.getElementById('newProxyRemark').value = '';
     document.getElementById('newProxyUrl').value = '';
     const btn = document.getElementById('btnSaveProxy');
-    btn.innerText = t('add'); btn.className = ''; 
+    btn.innerText = t('add'); btn.className = '';
 }
 
 function editPreProxy(id) {
@@ -658,8 +690,8 @@ async function savePreProxy() {
     const id = document.getElementById('editProxyId').value;
     let remark = document.getElementById('newProxyRemark').value;
     const url = document.getElementById('newProxyUrl').value.trim();
-    if(!url) return;
-    if(!remark) remark = getProxyRemark(url) || 'Manual Node';
+    if (!url) return;
+    if (!remark) remark = getProxyRemark(url) || 'Manual Node';
     if (!globalSettings.preProxies) globalSettings.preProxies = [];
     if (id) {
         const idx = globalSettings.preProxies.findIndex(x => x.id === id);
@@ -673,13 +705,13 @@ async function savePreProxy() {
 // --- Subscription Management ---
 function openSubEditModal(isNew) {
     const modal = document.getElementById('subEditModal');
-    const headerTitle = modal.querySelector('.modal-header span'); if(headerTitle) headerTitle.innerText = t('subTitle');
-    const labels = modal.querySelectorAll('label'); if(labels[0]) labels[0].innerText = t('subName'); if(labels[1]) labels[1].innerText = t('subUrl'); if(labels[2]) labels[2].innerText = t('subInterval');
+    const headerTitle = modal.querySelector('.modal-header span'); if (headerTitle) headerTitle.innerText = t('subTitle');
+    const labels = modal.querySelectorAll('label'); if (labels[0]) labels[0].innerText = t('subName'); if (labels[1]) labels[1].innerText = t('subUrl'); if (labels[2]) labels[2].innerText = t('subInterval');
     const options = document.getElementById('subInterval').options; options[0].text = t('optDisabled'); options[1].text = t('opt24h'); options[2].text = t('opt72h'); options[3].text = t('optCustom');
     const btnDel = document.getElementById('btnDelSub'); btnDel.innerText = t('btnDelSub'); btnDel.style.display = isNew ? 'none' : 'inline-block';
-    const btnSave = modal.querySelector('button[onclick="saveSubscription()"]'); if(btnSave) btnSave.innerText = t('btnSaveUpdate');
+    const btnSave = modal.querySelector('button[onclick="saveSubscription()"]'); if (btnSave) btnSave.innerText = t('btnSaveUpdate');
 
-    if(isNew) {
+    if (isNew) {
         document.getElementById('subId').value = '';
         document.getElementById('subName').value = '';
         document.getElementById('subUrl').value = '';
@@ -687,21 +719,21 @@ function openSubEditModal(isNew) {
         document.getElementById('subCustomInterval').style.display = 'none';
     }
     modal.style.display = 'flex';
-    document.getElementById('subInterval').onchange = function() { document.getElementById('subCustomInterval').style.display = this.value === 'custom' ? 'block' : 'none'; }
+    document.getElementById('subInterval').onchange = function () { document.getElementById('subCustomInterval').style.display = this.value === 'custom' ? 'block' : 'none'; }
 }
 
 function closeSubEditModal() { document.getElementById('subEditModal').style.display = 'none'; }
 
 function editCurrentSubscription() {
     const sub = globalSettings.subscriptions.find(s => s.id === currentProxyGroup);
-    if(!sub) return;
+    if (!sub) return;
     openSubEditModal(false);
     document.getElementById('subId').value = sub.id;
     document.getElementById('subName').value = sub.name;
     document.getElementById('subUrl').value = sub.url;
     const sel = document.getElementById('subInterval');
     const cust = document.getElementById('subCustomInterval');
-    if(['0','24','72'].includes(sub.interval)) { sel.value = sub.interval; cust.style.display = 'none'; }
+    if (['0', '24', '72'].includes(sub.interval)) { sel.value = sub.interval; cust.style.display = 'none'; }
     else { sel.value = 'custom'; cust.style.display = 'block'; cust.value = sub.interval; }
 }
 
@@ -710,15 +742,15 @@ async function saveSubscription() {
     const name = document.getElementById('subName').value || 'Subscription';
     const url = document.getElementById('subUrl').value.trim();
     let interval = document.getElementById('subInterval').value;
-    if(interval === 'custom') interval = document.getElementById('subCustomInterval').value;
-    if(!url) return;
+    if (interval === 'custom') interval = document.getElementById('subCustomInterval').value;
+    if (!url) return;
 
     let sub;
-    if(id) {
+    if (id) {
         sub = globalSettings.subscriptions.find(s => s.id === id);
-        if(sub) { sub.name = name; sub.url = url; sub.interval = interval; }
+        if (sub) { sub.name = name; sub.url = url; sub.interval = interval; }
     } else {
-        function uuidv4() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {const r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16);}); }
+        function uuidv4() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); }
         sub = { id: `sub-${Date.now()}`, name, url, interval, lastUpdated: 0 };
         globalSettings.subscriptions.push(sub);
     }
@@ -731,7 +763,7 @@ async function saveSubscription() {
 
 async function deleteSubscription() {
     const id = document.getElementById('subId').value;
-    if(!id) return;
+    if (!id) return;
     // 修复：添加汉化
     showConfirm(t('confirmDelSub'), async () => {
         globalSettings.subscriptions = globalSettings.subscriptions.filter(s => s.id !== id);
@@ -745,15 +777,15 @@ async function updateSubscriptionNodes(sub) {
     try {
         const content = await window.electronAPI.invoke('fetch-url', sub.url);
         let decoded = content;
-        try { if (!content.includes('://')) decoded = decodeBase64Content(content); } catch(e){}
+        try { if (!content.includes('://')) decoded = decodeBase64Content(content); } catch (e) { }
         const lines = decoded.split(/[\r\n]+/);
         globalSettings.preProxies = globalSettings.preProxies.filter(p => p.groupId !== sub.id);
         let count = 0;
         lines.forEach(line => {
             line = line.trim();
             if (line && line.includes('://')) {
-                const remark = getProxyRemark(line) || `Node ${count+1}`;
-                function uuidv4() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {const r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16);}); }
+                const remark = getProxyRemark(line) || `Node ${count + 1}`;
+                function uuidv4() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); }
                 globalSettings.preProxies.push({ id: uuidv4(), remark, url: line, enable: true, groupId: sub.id });
                 count++;
             }
@@ -761,9 +793,9 @@ async function updateSubscriptionNodes(sub) {
         sub.lastUpdated = Date.now();
         // 修复：添加汉化
         showAlert(`${t('msgSubUpdated')} ${sub.name} (${count} ${t('msgNodes')})`);
-    } catch(e) { 
+    } catch (e) {
         // 修复：添加汉化
-        showAlert(`${t('msgUpdateFailed')} ${e.message}`); 
+        showAlert(`${t('msgUpdateFailed')} ${e.message}`);
     }
 }
 
@@ -771,7 +803,7 @@ async function testSingleProxy(id) {
     const p = globalSettings.preProxies.find(x => x.id === id);
     if (!p) return;
     const btn = Array.from(document.querySelectorAll('#preProxyList button.outline')).find(el => el.onclick.toString().includes(id));
-    if(btn) btn.innerText = "...";
+    if (btn) btn.innerText = "...";
     try {
         const res = await window.electronAPI.invoke('test-proxy-latency', p.url);
         p.latency = res.success ? res.latency : -1;
@@ -781,30 +813,30 @@ async function testSingleProxy(id) {
 
 async function testCurrentGroup() {
     const list = (globalSettings.preProxies || []).filter(p => {
-        if(currentProxyGroup === 'manual') return !p.groupId || p.groupId === 'manual';
+        if (currentProxyGroup === 'manual') return !p.groupId || p.groupId === 'manual';
         return p.groupId === currentProxyGroup;
     });
-    if(list.length === 0) return;
+    if (list.length === 0) return;
     const promises = list.map(async (p) => {
         const res = await window.electronAPI.invoke('test-proxy-latency', p.url);
         p.latency = res.success ? res.latency : -1;
         return p;
     });
     await Promise.all(promises);
-    if(globalSettings.mode === 'single') {
+    if (globalSettings.mode === 'single') {
         let best = null, min = 99999;
-        list.forEach(p => { if(p.latency > 0 && p.latency < min) { min = p.latency; best = p; } });
-        if(best) { 
-            globalSettings.selectedId = best.id; 
-            if(document.getElementById('notifySwitch').checked) new Notification('GeekEZ', { body: `Auto-Switched: ${best.remark}` });
+        list.forEach(p => { if (p.latency > 0 && p.latency < min) { min = p.latency; best = p; } });
+        if (best) {
+            globalSettings.selectedId = best.id;
+            if (document.getElementById('notifySwitch').checked) new Notification('GeekEZ', { body: `Auto-Switched: ${best.remark}` });
         }
     }
     renderProxyNodes();
 }
 
-function delP(id) { globalSettings.preProxies = globalSettings.preProxies.filter(p=>p.id!==id); renderProxyNodes(); }
+function delP(id) { globalSettings.preProxies = globalSettings.preProxies.filter(p => p.id !== id); renderProxyNodes(); }
 function selP(id) { globalSettings.selectedId = id; renderProxyNodes(); }
-function togP(id) { const p = globalSettings.preProxies.find(x=>x.id===id); if(p) p.enable = !p.enable; }
+function togP(id) { const p = globalSettings.preProxies.find(x => x.id === id); if (p) p.enable = !p.enable; }
 
 async function saveProxySettings() {
     globalSettings.mode = document.getElementById('proxyMode').value;
@@ -818,11 +850,11 @@ function updateToolbar() {
     globalSettings.enablePreProxy = enable;
     window.electronAPI.saveSettings(globalSettings);
     const d = document.getElementById('currentProxyDisplay');
-    if(!enable) { d.innerText = "OFF"; d.style.color = "var(--text-secondary)"; d.style.border = "1px solid var(--border)"; return; }
+    if (!enable) { d.innerText = "OFF"; d.style.color = "var(--text-secondary)"; d.style.border = "1px solid var(--border)"; return; }
     d.style.color = "var(--accent)"; d.style.border = "1px solid var(--accent)";
     let count = 0;
-    if(globalSettings.mode === 'single') count = globalSettings.selectedId ? 1 : 0;
-    else count = (globalSettings.preProxies||[]).filter(p=>p.enable!==false).length;
+    if (globalSettings.mode === 'single') count = globalSettings.selectedId ? 1 : 0;
+    else count = (globalSettings.preProxies || []).filter(p => p.enable !== false).length;
     let modeText = "";
     if (globalSettings.mode === 'single') modeText = t('modeSingle');
     else if (globalSettings.mode === 'balance') modeText = t('modeBalance');
@@ -837,32 +869,32 @@ async function exportData(type) {
     closeExportModal();
     try {
         const result = await window.electronAPI.invoke('export-data', type);
-        if(result) showAlert(t('msgExportSuccess')); else showAlert(t('msgNoData'));
-    } catch(e) { showAlert("Export Failed: " + e.message); }
+        if (result) showAlert(t('msgExportSuccess')); else showAlert(t('msgNoData'));
+    } catch (e) { showAlert("Export Failed: " + e.message); }
 }
 
 // Import Logic
 async function importData() {
     try {
         const result = await window.electronAPI.invoke('import-data');
-        if(result) {
+        if (result) {
             globalSettings = await window.electronAPI.getSettings();
-            if(!globalSettings.preProxies) globalSettings.preProxies = [];
-            if(!globalSettings.subscriptions) globalSettings.subscriptions = [];
+            if (!globalSettings.preProxies) globalSettings.preProxies = [];
+            if (!globalSettings.subscriptions) globalSettings.subscriptions = [];
             loadProfiles(); renderGroupTabs(); updateToolbar();
             showAlert(t('msgImportSuccess'));
         }
-    } catch(e) { showAlert("Import Failed: " + e.message); }
+    } catch (e) { showAlert("Import Failed: " + e.message); }
 }
 
 function openImportSub() { showInput(t('importSubTitle'), importSubscription); }
 async function importSubscription(url) {
-    if(!url) return;
+    if (!url) return;
     try {
         const content = await window.electronAPI.invoke('fetch-url', url);
-        if(!content) return showAlert(t('subErr'));
+        if (!content) return showAlert(t('subErr'));
         let decoded = content;
-        try { if (!content.includes('://')) decoded = decodeBase64Content(content); } catch(e){}
+        try { if (!content.includes('://')) decoded = decodeBase64Content(content); } catch (e) { }
         const lines = decoded.split(/[\r\n]+/);
         let count = 0;
         if (!globalSettings.preProxies) globalSettings.preProxies = [];
@@ -872,8 +904,8 @@ async function importSubscription(url) {
             line = line.trim();
             if (line && line.includes('://')) {
                 const remark = getProxyRemark(line) || `Node ${count + 1}`;
-                function uuidv4() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {const r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16);}); }
-                globalSettings.preProxies.push({ 
+                function uuidv4() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); }
+                globalSettings.preProxies.push({
                     id: uuidv4(), remark, url: line, enable: true, groupId, groupName
                 });
                 count++;
@@ -889,11 +921,170 @@ function switchHelpTab(tabName) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     const idx = tabName === 'manual' ? 0 : 1;
     const tabs = document.querySelectorAll('#helpModal .tab-btn');
-    if(tabs[idx]) tabs[idx].classList.add('active');
+    if (tabs[idx]) tabs[idx].classList.add('active');
     document.querySelectorAll('.help-section').forEach(el => el.classList.remove('active'));
     document.getElementById(`help-${tabName}`).classList.add('active');
+}
+// ============================================================================
+// Settings Modal Functions
+// ============================================================================
+function openSettings() {
+    document.getElementById('settingsModal').style.display = 'flex';
+    loadUserExtensions();
+}
+function closeSettings() {
+    document.getElementById('settingsModal').style.display = 'none';
+}
+function switchSettingsTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('#settingsModal .tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    // Update tab content
+    document.querySelectorAll('.settings-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    document.getElementById('settings-' + tabName).style.display = 'block';
+}
+// ============================================================================
+// Extension Management Functions
+// ============================================================================
+async function selectExtensionFolder() {
+    const path = await window.electronAPI.invoke('select-extension-folder');
+    if (path) {
+        await window.electronAPI.invoke('add-user-extension', path);
+        await loadUserExtensions();
+        showAlert(t('settingsExtAdded'));
+    }
+}
+async function loadUserExtensions() {
+    const exts = await window.electronAPI.invoke('get-user-extensions');
+    const list = document.getElementById('userExtensionList');
+    if (!list) return;
+
+    if (exts.length === 0) {
+        list.innerHTML = `<div style="opacity:0.5; text-align:center; padding:20px;">${t('settingsExtNoExt')}</div>`;
+        return;
+    }
+
+    list.innerHTML = exts.map(ext => {
+        const name = ext.split(/[\\/]/).pop();
+        return `
+            <div class="ext-item">
+                <div>
+                    <div style="font-weight:bold;">${name}</div>
+                    <div style="font-size:11px; opacity:0.6;">${ext}</div>
+                </div>
+                <button class="danger outline" onclick="removeUserExtension('${ext.replace(/\\/g, '\\\\')}')" style="padding:4px 12px; font-size:11px;">${t('settingsExtRemove')}</button>
+            </div>
+        `;
+    }).join('');
+}
+async function removeUserExtension(path) {
+    await window.electronAPI.invoke('remove-user-extension', path);
+    await loadUserExtensions();
+    showAlert(t('settingsExtRemoved'));
 }
 function openHelp() { switchHelpTab('manual'); document.getElementById('helpModal').style.display = 'flex'; } // flex
 function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
 
+
+// Custom timezone dropdown initialization
+function initCustomTimezoneDropdown(inputId, dropdownId) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    
+    if (!input || !dropdown || !window.TIMEZONES) return;
+    
+    let selectedIndex = -1;
+    
+    // Populate dropdown with all timezones
+    function populateDropdown(filter = '') {
+        const filtered = window.TIMEZONES.filter(tz => 
+            tz.toLowerCase().includes(filter.toLowerCase())
+        );
+        
+        dropdown.innerHTML = filtered.map((tz, index) => 
+            `<div class="timezone-item" data-value="${tz}" data-index="${index}">${tz}</div>`
+        ).join('');
+        
+        selectedIndex = -1;
+    }
+    
+    // Show dropdown
+    function showDropdown() {
+        populateDropdown(input.value);
+        dropdown.classList.add('active');
+    }
+    
+    // Hide dropdown
+    function hideDropdown() {
+        dropdown.classList.remove('active');
+        selectedIndex = -1;
+    }
+    
+    // Select item
+    function selectItem(value) {
+        input.value = value;
+        hideDropdown();
+    }
+    
+    // Input focus - show dropdown
+    input.addEventListener('focus', showDropdown);
+    
+    // Input typing - filter
+    input.addEventListener('input', () => {
+        populateDropdown(input.value);
+        if (!dropdown.classList.contains('active')) {
+            dropdown.classList.add('active');
+        }
+    });
+    
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+        const items = dropdown.querySelectorAll('.timezone-item:not(.hidden)');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateSelection(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, 0);
+            updateSelection(items);
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+            e.preventDefault();
+            selectItem(items[selectedIndex].dataset.value);
+        } else if (e.key === 'Escape') {
+            hideDropdown();
+        }
+    });
+    
+    // Update selection highlight
+    function updateSelection(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle('selected', index === selectedIndex);
+        });
+        if (items[selectedIndex]) {
+            items[selectedIndex].scrollIntoView({ block: 'nearest' });
+        }
+    }
+    
+    // Click on item
+    dropdown.addEventListener('click', (e) => {
+        const item = e.target.closest('.timezone-item');
+        if (item) {
+            selectItem(item.dataset.value);
+        }
+    });
+    
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            hideDropdown();
+        }
+    });
+}
 init();
