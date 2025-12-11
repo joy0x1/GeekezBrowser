@@ -495,7 +495,9 @@ async function saveNewProfile() {
     let name = document.getElementById('addName').value;
     const proxyStr = document.getElementById('addProxy').value.trim();
     const tagsStr = document.getElementById('addTags').value;
-    const timezone = document.getElementById('addTimezone').value; // 获取时区
+    const timezoneInput = document.getElementById('addTimezone').value;
+    // 将 "Auto (No Change)" 转换为 "Auto" 存储
+    const timezone = timezoneInput === 'Auto (No Change)' ? 'Auto' : timezoneInput;
 
     const tags = tagsStr.split(/[,，]/).map(s => s.trim()).filter(s => s);
 
@@ -529,8 +531,10 @@ async function openEditModal(id) {
     document.getElementById('editProxy').value = p.proxyStr;
     document.getElementById('editTags').value = (p.tags || []).join(', ');
 
-    // 回填时区，如果没有则默认 LA
-    document.getElementById('editTimezone').value = fp.timezone || 'Auto (No Change)';
+    // 回填时区，将 "Auto" 转换为 "Auto (No Change)" 显示
+    const savedTimezone = fp.timezone || 'Auto';
+    const displayTimezone = savedTimezone === 'Auto' ? 'Auto (No Change)' : savedTimezone;
+    document.getElementById('editTimezone').value = displayTimezone;
 
     const sel = document.getElementById('editPreProxyOverride');
     sel.options[0].text = t('optDefault'); sel.options[1].text = t('optOn'); sel.options[2].text = t('optOff');
