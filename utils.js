@@ -219,9 +219,91 @@ function parseProxyLink(link, tag) {
                 concurrency: -1
             };
         } else if (link.startsWith('socks')) {
-            const urlObj = new URL(link.replace(/^socks5?:\/\//, 'http://'));
+            // Support two SOCKS5 formats:
+            // 1. v2rayN format: socks://base64(user:pass)@host:port#remark
+            // 2. Standard format: socks://user:pass@host:port
+
             outbound.protocol = "socks";
-            outbound.settings = { servers: [{ address: urlObj.hostname, port: parseInt(urlObj.port), users: urlObj.username ? [{ user: urlObj.username, pass: urlObj.password }] : [] }] };
+
+            // Remove socks:// or socks5://
+            let cleanLink = link.replace(/^socks5?:\/\//, '');
+
+            // Extract remark if exists (after #)
+            const hashIndex = cleanLink.indexOf('#');
+            if (hashIndex !== -1) {
+                cleanLink = cleanLink.substring(0, hashIndex);
+            }
+
+            // Split by @ to get auth and server parts
+            const atIndex = cleanLink.indexOf('@');
+            let username = '';
+            let password = '';
+            let serverPart = cleanLink;
+
+            if (atIndex !== -1) {
+                const authPart = cleanLink.substring(0, atIndex);
+                serverPart = cleanLink.substring(atIndex + 1);
+
+                // Try to decode as base64 first (v2rayN style)
+                try {
+                    const decoded = Buffer.from(authPart, 'base64').toString('utf8');
+                    const colonIndex = decoded.indexOf(':');
+                    if (colonIndex !== -1) {
+                        username = decoded.substring(0, colonIndex);
+                        password = decoded.substring(colonIndex + 1);
+                    } else {
+                        // Not a valid user:pass format after decode, treat as plain username
+                        username = authPart;
+                    }
+                } catch (e) {
+                    // Not base64, check if it's user:pass format
+                    const colonIndex = authPart.indexOf(':');
+                    if (colonIndex !== -1) {
+                        username = authPart.substring(0, colonIndex);
+                        password = authPart.substring(colonIndex + 1);
+                    } else {
+                        username = authPart;
+                    }
+                }
+            }
+
+            // Parse server part (host:port)
+            const colonIndex = serverPart.indexOf(':');
+            const address = colonIndex !== -1 ? serverPart.substring(0, colonIndex) : serverPart;
+            const port = colonIndex !== -1 ? parseInt(serverPart.substring(colonIndex + 1)) : 1080;
+
+            outbound.settings = {
+                servers: [{
+                    address: address,
+                    port: port,
+                    users: username ? [{ user: username, pass: password }] : []
+                }]
+            };
+        } else if (link.includes(':') && !link.includes('://')) {
+            // Handle IP:Port:User:Pass format (e.g., 107.150.98.193:1536:user:pass)
+            const parts = link.split(':');
+            if (parts.length === 4) {
+                outbound.protocol = "socks";
+                outbound.settings = {
+                    servers: [{
+                        address: parts[0],
+                        port: parseInt(parts[1]),
+                        users: [{ user: parts[2], pass: parts[3] }]
+                    }]
+                };
+            } else if (parts.length === 2) {
+                // IP:Port without auth
+                outbound.protocol = "socks";
+                outbound.settings = {
+                    servers: [{
+                        address: parts[0],
+                        port: parseInt(parts[1]),
+                        users: []
+                    }]
+                };
+            } else {
+                throw new Error("Invalid IP:Port:User:Pass format");
+            }
         } else if (link.startsWith('http')) {
             const urlObj = new URL(link);
             outbound.protocol = "http";
