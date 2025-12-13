@@ -69,6 +69,7 @@ const enTranslations = {
     autoFingerprint: "* Fingerprints generated automatically",
     checkingUpdate: "Checking for updates...",
     appUpdateFound: "New App version found!",
+    askUpdate: "Update now",
     xrayUpdateFound: "New Xray core found! Downloading...",
     noUpdate: "You are up to date.",
     updateError: "Update check failed.",
