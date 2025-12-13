@@ -26,10 +26,7 @@
 <div align="center">
 
 <img src="Main Interface1.png" alt="主界面1" width="800">
-
 <img src="Main Interface2.png" alt="主界面2" width="800">
-
-*主界面 - 环境管理*
 
 </div>
 
