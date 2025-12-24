@@ -1112,75 +1112,13 @@
                 <div data-i18n="geoHint" style="font-size:10px; opacity:0.5; margin-bottom:12px;">Select a city matching
                     your proxy.</div>
                 <!-- Language Selector -->
-                <label
+                <label data-i18n="languageLabel"
                     style="font-size:11px; font-weight:bold; opacity:0.8; margin-top:8px; display:block;">Language</label>
-                <select id="editLanguage"
-                    style="width:100%; margin-bottom:12px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border); padding:5px; border-radius:4px;">
-                    <option value="auto">Auto (System Default)</option>
-                    <!-- North America -->
-                    <option value="en-US">English (US)</option>
-                    <option value="en-CA">English (Canada)</option>
-                    <option value="fr-CA">Français (Canada)</option>
-                    <option value="es-MX">Español (México)</option>
-                    <!-- South America -->
-                    <option value="es-AR">Español (Argentina)</option>
-                    <option value="es-CL">Español (Chile)</option>
-                    <option value="es-CO">Español (Colombia)</option>
-                    <option value="pt-BR">Português (Brasil)</option>
-                    <!-- Europe -->
-                    <option value="en-GB">English (UK)</option>
-                    <option value="en-IE">English (Ireland)</option>
-                    <option value="fr-FR">Français (France)</option>
-                    <option value="de-DE">Deutsch (Deutschland)</option>
-                    <option value="it-IT">Italiano (Italia)</option>
-                    <option value="es-ES">Español (España)</option>
-                    <option value="pt-PT">Português (Portugal)</option>
-                    <option value="nl-NL">Nederlands (Nederland)</option>
-                    <option value="nl-BE">Nederlands (België)</option>
-                    <option value="fr-BE">Français (Belgique)</option>
-                    <option value="de-CH">Deutsch (Schweiz)</option>
-                    <option value="fr-CH">Français (Suisse)</option>
-                    <option value="it-CH">Italiano (Svizzera)</option>
-                    <option value="de-AT">Deutsch (Österreich)</option>
-                    <option value="sv-SE">Svenska (Sverige)</option>
-                    <option value="no-NO">Norsk (Norge)</option>
-                    <option value="da-DK">Dansk (Danmark)</option>
-                    <option value="fi-FI">Suomi (Suomi)</option>
-                    <option value="pl-PL">Polski (Polska)</option>
-                    <option value="cs-CZ">Čeština (Česko)</option>
-                    <option value="hu-HU">Magyar (Magyarország)</option>
-                    <option value="el-GR">Ελληνικά (Ελλάδα)</option>
-                    <option value="tr-TR">Türkçe (Türkiye)</option>
-                    <option value="ru-RU">Русский (Россия)</option>
-                    <option value="uk-UA">Українська (Україна)</option>
-                    <option value="ro-RO">Română (România)</option>
-                    <option value="bg-BG">Български (България)</option>
-                    <!-- Middle East -->
-                    <option value="ar-SA">العربية (السعودية)</option>
-                    <option value="ar-AE">العربية (الإمارات)</option>
-                    <option value="he-IL">עברית (ישראל)</option>
-                    <option value="fa-IR">فارسی (ایران)</option>
-                    <!-- Asia -->
-                    <option value="zh-CN">简体中文 (中国)</option>
-                    <option value="zh-TW">繁體中文 (台灣)</option>
-                    <option value="zh-HK">繁體中文 (香港)</option>
-                    <option value="ja-JP">日本語 (日本)</option>
-                    <option value="ko-KR">한국어 (대한민국)</option>
-                    <option value="th-TH">ไทย (ไทย)</option>
-                    <option value="vi-VN">Tiếng Việt (Việt Nam)</option>
-                    <option value="id-ID">Bahasa Indonesia (Indonesia)</option>
-                    <option value="ms-MY">Bahasa Melayu (Malaysia)</option>
-                    <option value="fil-PH">Filipino (Pilipinas)</option>
-                    <option value="hi-IN">हिन्दी (भारत)</option>
-                    <option value="bn-BD">বাংলা (বাংলাদেশ)</option>
-                    <!-- Pacific -->
-                    <option value="en-AU">English (Australia)</option>
-                    <option value="en-NZ">English (New Zealand)</option>
-                    <!-- Africa -->
-                    <option value="ar-EG">العربية (مصر)</option>
-                    <option value="en-ZA">English (South Africa)</option>
-                    <option value="fr-MA">Français (Maroc)</option>
-                </select>
+                <div class="timezone-wrapper">
+                    <input type="text" id="editLanguage" placeholder="Type to search language..." autocomplete="off">
+                    <div class="timezone-dropdown" id="editLanguageDropdown"></div>
+                </div>
+
                 <label data-i18n="proxyLink" style="font-size:11px; font-weight:bold; opacity:0.8;">Proxy</label>
                 <textarea id="editProxy" rows="4"></textarea>
                 <div style="display:flex; gap:10px;">
@@ -1469,6 +1407,7 @@
 
     <script src="timezones.js"></script>
     <script src="cities.js"></script>
+    <script src="languages.js"></script>
     <script src="locales/zh-CN.js"></script>
     <script src="i18n.js"></script>
     <script src="renderer.js"></script>

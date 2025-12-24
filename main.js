@@ -435,6 +435,15 @@ ipcMain.handle('launch-profile', async (event, profileId, watermarkStyle) => {
         // 优化：减少等待时间，Xray 通常 300ms 内就能启动
         await new Promise(resolve => setTimeout(resolve, 300));
 
+        // 0. Resolve Language (Fix: Resolve 'auto' BEFORE generating extension so inject script gets explicit language)
+        const targetLang = profile.fingerprint?.language && profile.fingerprint.language !== 'auto'
+            ? profile.fingerprint.language
+            : 'en-US';
+
+        // Update in-memory profile to ensure generateExtension writes the correct language to inject script
+        profile.fingerprint.language = targetLang;
+        profile.fingerprint.languages = [targetLang, targetLang.split('-')[0]];
+
         // 1. 生成 GeekEZ Guard 扩展（使用传递的水印样式）
         const style = watermarkStyle || 'enhanced'; // 默认使用增强水印
         const extPath = await generateExtension(profileDir, profile.fingerprint, profile.name, style);
@@ -449,9 +458,6 @@ ipcMain.handle('launch-profile', async (event, profileId, watermarkStyle) => {
         }
 
         // 4. 构建启动参数（性能优化）
-        const targetLang = profile.fingerprint?.language && profile.fingerprint.language !== 'auto'
-            ? profile.fingerprint.language
-            : (profile.fingerprint.languages?.[0] || 'en-US');
 
         const launchArgs = [
             `--proxy-server=socks5://127.0.0.1:${localPort}`,

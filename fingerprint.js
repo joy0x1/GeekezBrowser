@@ -1,6 +1,4 @@
 const os = require('os');
-const CHROME_VERSION_FULL = '129.0.6668.58';
-const CHROME_MAJOR = '129';
 
 const RESOLUTIONS = [{ w: 1920, h: 1080 }, { w: 2560, h: 1440 }, { w: 1366, h: 768 }, { w: 1536, h: 864 }, { w: 1440, h: 900 }];
 
@@ -13,26 +11,11 @@ function generateFingerprint() {
     let osData = {};
 
     if (platform === 'win32') {
-        osData = {
-            userAgentStr: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${CHROME_VERSION_FULL} Safari/537.36`,
-            platform: 'Win32',
-            uaPlatform: 'Windows',
-            platformVersion: '15.0.0'
-        };
+        osData = { platform: 'Win32' };
     } else if (platform === 'darwin') {
-        osData = {
-            userAgentStr: `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${CHROME_VERSION_FULL} Safari/537.36`,
-            platform: 'MacIntel',
-            uaPlatform: 'macOS',
-            platformVersion: '14.0.0'
-        };
+        osData = { platform: 'MacIntel' };
     } else {
-        osData = {
-            userAgentStr: `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${CHROME_VERSION_FULL} Safari/537.36`,
-            platform: 'Linux x86_64',
-            uaPlatform: 'Linux',
-            platformVersion: '6.5.0'
-        };
+        osData = { platform: 'Linux x86_64' };
     }
 
     const res = getRandom(RESOLUTIONS);
@@ -45,29 +28,7 @@ function generateFingerprint() {
         a: Math.floor(Math.random() * 10) - 5
     };
 
-    const userAgentMetadata = {
-        brands: [
-            { brand: "Google Chrome", version: CHROME_MAJOR },
-            { brand: "Chromium", version: CHROME_MAJOR },
-            { brand: "Not=A?Brand", version: "24" }
-        ],
-        fullVersionList: [
-            { brand: "Google Chrome", version: CHROME_VERSION_FULL },
-            { brand: "Chromium", version: CHROME_VERSION_FULL },
-            { brand: "Not=A?Brand", version: "24.0.0.0" }
-        ],
-        mobile: false,
-        model: "",
-        platform: osData.uaPlatform,
-        platformVersion: osData.platformVersion,
-        architecture: "x86",
-        bitness: "64",
-        wow64: false
-    };
-
     return {
-        userAgent: osData.userAgentStr,
-        userAgentMetadata: userAgentMetadata,
         platform: osData.platform,
         screen: { width: res.w, height: res.h },
         window: { width: res.w, height: res.h },

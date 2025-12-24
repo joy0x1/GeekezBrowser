@@ -103,6 +103,100 @@ function initCustomCityDropdown(inputId, dropdownId) {
     });
 }
 
+// --- Language Dropdown Helpers ---
+function getLanguageName(code) {
+    if (!code || code === 'auto') return "Auto (System Default)";
+    if (!window.LANGUAGE_DATA) return code;
+    const entry = window.LANGUAGE_DATA.find(x => x.code === code);
+    return entry ? entry.name : "Auto (System Default)";
+}
+
+function getLanguageCode(name) {
+    if (!name || name === "Auto (System Default)") return 'auto';
+    if (!window.LANGUAGE_DATA) return 'auto';
+    const entry = window.LANGUAGE_DATA.find(x => x.name === name);
+    return entry ? entry.code : 'auto';
+}
+
+function initCustomLanguageDropdown(inputId, dropdownId) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
+
+    // Use window.LANGUAGE_DATA from languages.js
+    const allOptions = window.LANGUAGE_DATA || [];
+    let selectedIndex = -1;
+
+    function populateDropdown(filter = '') {
+        const lowerFilter = filter.toLowerCase();
+        const shouldShowAll = filter === '' || filter === 'Auto (System Default)';
+        const filtered = shouldShowAll ? allOptions : allOptions.filter(item =>
+            item.name.toLowerCase().includes(lowerFilter)
+        );
+
+        dropdown.innerHTML = filtered.map((item, index) =>
+            `<div class="timezone-item" data-code="${item.code}" data-index="${index}">${item.name}</div>`
+        ).join('');
+        selectedIndex = -1;
+    }
+
+    function showDropdown() {
+        populateDropdown('');
+        dropdown.classList.add('active');
+    }
+
+    function hideDropdown() {
+        dropdown.classList.remove('active');
+        selectedIndex = -1;
+    }
+
+    function selectItem(name) {
+        input.value = name;
+        hideDropdown();
+    }
+
+    input.addEventListener('focus', showDropdown);
+    input.addEventListener('input', () => {
+        populateDropdown(input.value);
+        if (!dropdown.classList.contains('active')) dropdown.classList.add('active');
+    });
+
+    input.addEventListener('keydown', (e) => {
+        const items = dropdown.querySelectorAll('.timezone-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateSelection(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, 0);
+            updateSelection(items);
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+            e.preventDefault();
+            selectItem(items[selectedIndex].innerText);
+        } else if (e.key === 'Escape') {
+            hideDropdown();
+        }
+    });
+
+    function updateSelection(items) {
+        items.forEach((item, index) => item.classList.toggle('selected', index === selectedIndex));
+        if (items[selectedIndex]) items[selectedIndex].scrollIntoView({ block: 'nearest' });
+    }
+
+    dropdown.addEventListener('click', (e) => {
+        const item = e.target.closest('.timezone-item');
+        if (item) selectItem(item.innerText);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            hideDropdown();
+        }
+    });
+}
+
+
 function decodeBase64Content(str) {
     try {
         str = str.replace(/-/g, '+').replace(/_/g, '/');
@@ -504,7 +598,11 @@ async function openEditModal(id) {
     sel.value = p.preProxyOverride || 'default';
     document.getElementById('editResW').value = fp.screen?.width || 1920;
     document.getElementById('editResH').value = fp.screen?.height || 1080;
-    document.getElementById('editLanguage').value = fp.language || 'auto';
+
+    // Init Language Dropdown
+    initCustomLanguageDropdown('editLanguage', 'editLanguageDropdown');
+    document.getElementById('editLanguage').value = getLanguageName(fp.language || 'auto');
+
     document.getElementById('editSeed').value = fp.noiseSeed || 0;
 
     // Load debug port and show/hide based on global setting
@@ -555,7 +653,7 @@ async function saveEditProfile() {
             delete p.fingerprint.city;
             delete p.fingerprint.geolocation;
         }
-        p.fingerprint.language = document.getElementById('editLanguage').value;
+        p.fingerprint.language = getLanguageCode(document.getElementById('editLanguage').value);
         p.fingerprint.noiseSeed = parseInt(document.getElementById('editSeed').value);
 
         // Save debug port if enabled
